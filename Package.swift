@@ -12,10 +12,10 @@ let package = Package(
         .target(
             name: "stellarsdk",
             dependencies: [],
-            path: "stellarsdk"),
+            path: "stellarsdk/stellarsdk"),
         .testTarget(
             name: "stellarsdkTests",
             dependencies: ["stellarsdk"],
-            path: "stellarsdkTests"),
+            path: "stellarsdk/stellarsdkTests"),
     ]
 )
