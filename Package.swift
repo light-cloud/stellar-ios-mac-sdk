@@ -8,13 +8,12 @@ let package = Package(
     ],
     dependencies: [
     ],
-    exclude: ["stellarsdk/stellarsdk/libs", "stellarsdk/stellarsdk/osx", "stellarsdk/stellarsdk/iphone", "stellarsdk/stellarsdk/simulator"],
     targets: [
         .target(
             name: "stellarsdk",
             dependencies: [],
             path: "stellarsdk/stellarsdk",
-            exclude: ["stellarsdk/stellarsdk/libs", "stellarsdk/stellarsdk/osx", "stellarsdk/stellarsdk/iphone", "stellarsdk/stellarsdk/simulator"]),
+            exclude: ["stellarsdk/stellarsdk/libs/ed25519-C/module.modulemap", "stellarsdk/stellarsdk/osx/module.modulemap", "stellarsdk/stellarsdk/iphone/module.modulemap", "stellarsdk/stellarsdk/simulator/module.modulemap"]),
         .testTarget(
             name: "stellarsdkTests",
             dependencies: ["stellarsdk"],
