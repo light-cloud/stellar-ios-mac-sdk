@@ -1,4 +1,4 @@
-// swift-tools-version:4.0
+// swift-tools-version:4.2
 import PackageDescription
 
 let package = Package(
@@ -8,6 +8,7 @@ let package = Package(
     ],
     dependencies: [
     ],
+    exclude: ["stellarsdk/stellarsdk/libs", "stellarsdk/stellarsdk/osx", "stellarsdk/stellarsdk/iphone", "stellarsdk/stellarsdk/simulator"],
     targets: [
         .target(
             name: "stellarsdk",
@@ -19,5 +20,4 @@ let package = Package(
             dependencies: ["stellarsdk"],
             path: "stellarsdk/stellarsdkTests"),
     ],
-    exclude: ["stellarsdk/stellarsdk/libs", "stellarsdk/stellarsdk/osx", "stellarsdk/stellarsdk/iphone", "stellarsdk/stellarsdk/simulator"]
 )
