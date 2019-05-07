@@ -3,6 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "stellar-ios-mac-sdk",
+    exclude: ["stellarsdk/stellarsdk/libs", "stellarsdk/stellarsdk/osx", "stellarsdk/stellarsdk/iphone", "stellarsdk/stellarsdk/simulator"],
     products: [
         .library(name: "stellar-ios-mac-sdk", targets: ["stellarsdk"]),
     ],
@@ -12,8 +13,7 @@ let package = Package(
         .target(
             name: "stellarsdk",
             dependencies: [],
-            path: "stellarsdk/stellarsdk",
-            exclude: ["stellarsdk/stellarsdk/libs", "stellarsdk/stellarsdk/osx", "stellarsdk/stellarsdk/iphone", "stellarsdk/stellarsdk/simulator"]),
+            path: "stellarsdk/stellarsdk"),
         .testTarget(
             name: "stellarsdkTests",
             dependencies: ["stellarsdk"],
