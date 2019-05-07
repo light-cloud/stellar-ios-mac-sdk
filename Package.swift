@@ -17,6 +17,6 @@ let package = Package(
         .testTarget(
             name: "stellarsdkTests",
             dependencies: ["stellarsdk"],
-            path: "stellarsdk/stellarsdkTests"),
-    ],
+            path: "stellarsdk/stellarsdkTests")
+    ]
 )
