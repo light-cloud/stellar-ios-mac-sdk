@@ -12,7 +12,8 @@ let package = Package(
         .target(
             name: "stellarsdk",
             dependencies: [],
-            path: "stellarsdk/stellarsdk"),
+            path: "stellarsdk/stellarsdk",
+            exclude: ["stellarsdk/stellarsdk/libs", "stellarsdk/stellarsdk/osx", "stellarsdk/stellarsdk/iphone", "stellarsdk/stellarsdk/simulator"]),
         .testTarget(
             name: "stellarsdkTests",
             dependencies: ["stellarsdk"],
