@@ -42,6 +42,8 @@ public enum AnchorTransactionStatus: String {
     case tooLarge = "too_large"
     /// catch-all for any error not enumerated above
     case error = "error"
+  
+    case pendingUserTransferComplete = "pending_user_transfer_complete"
 }
 
 public struct AnchorTransactionsResponse: Decodable {
