@@ -259,7 +259,9 @@ open class EventSource: NSObject, URLSessionDataDelegate {
         }
         
         for parsedEvent in parsedEvents {
-            self.lastEventID = parsedEvent.id
+            DispatchQueue.main.async { [weak self] in
+              self?.lastEventID = parsedEvent.id
+            }
             
             if parsedEvent.event == nil {
                 if let data = parsedEvent.data, let onMessage = self.onMessageCallback {
@@ -285,11 +287,9 @@ open class EventSource: NSObject, URLSessionDataDelegate {
         }
         
         get {
-            
             if let lastEventID = defaults[lastEventIDKey] {
                 return lastEventID
             }
-            return nil
         }
     }
     
