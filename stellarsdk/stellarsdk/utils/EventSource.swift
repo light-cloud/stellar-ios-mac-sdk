@@ -290,6 +290,7 @@ open class EventSource: NSObject, URLSessionDataDelegate {
             if let lastEventID = defaults[lastEventIDKey] {
                 return lastEventID
             }
+            return nil
         }
     }
     
