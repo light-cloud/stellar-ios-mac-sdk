@@ -151,6 +151,359 @@ class TransactionsLocalTestCase: XCTestCase {
         XCTAssert (xdr == xdr2)
     }
     
+    func testCreateClaimableBalanceTxRep() {
+        let txrep = """
+        type: ENVELOPE_TYPE_TX
+        tx.sourceAccount: GBCJLPKHE2QTXTYZNZG6K3OBRPHJHABT2MG6JLAMM5FOARHM2GL67VCW
+        tx.fee: 100
+        tx.seqNum: 2916609211498497
+        tx.timeBounds._present: true
+        tx.timeBounds.minTime: 0
+        tx.timeBounds.maxTime: 0
+        tx.memo.type: MEMO_NONE
+        tx.operations.len: 1
+        tx.operations[0].sourceAccount._present: true
+        tx.operations[0].sourceAccount: GBCJLPKHE2QTXTYZNZG6K3OBRPHJHABT2MG6JLAMM5FOARHM2GL67VCW
+        tx.operations[0].body.type: CREATE_CLAIMABLE_BALANCE
+        tx.operations[0].body.createClaimableBalanceOp.asset: XLM
+        tx.operations[0].body.createClaimableBalanceOp.amount: 2900000000
+        tx.operations[0].body.createClaimableBalanceOp.claimants.len: 6
+        tx.operations[0].body.createClaimableBalanceOp.claimants[0].type: CLAIMANT_TYPE_V0
+        tx.operations[0].body.createClaimableBalanceOp.claimants[0].v0.destination: GAF2EOTBIWV45XDG5O2QSIVXQ5KPI6EJIALVGI7VFOX7ENDNI6ONBYQO
+        tx.operations[0].body.createClaimableBalanceOp.claimants[0].v0.predicate.type: CLAIM_PREDICATE_UNCONDITIONAL
+        tx.operations[0].body.createClaimableBalanceOp.claimants[1].type: CLAIMANT_TYPE_V0
+        tx.operations[0].body.createClaimableBalanceOp.claimants[1].v0.destination: GCUEJ6YLQFWETNAXLIM3B3VN7CJISN6XLGXGDHQDVLWTYZODGSHRJWPS
+        tx.operations[0].body.createClaimableBalanceOp.claimants[1].v0.predicate.type: CLAIM_PREDICATE_BEFORE_RELATIVE_TIME
+        tx.operations[0].body.createClaimableBalanceOp.claimants[1].v0.predicate.relBefore: 400
+        tx.operations[0].body.createClaimableBalanceOp.claimants[2].type: CLAIMANT_TYPE_V0
+        tx.operations[0].body.createClaimableBalanceOp.claimants[2].v0.destination: GCWV5WETMS3RD2ZZUF7S3NQPEVMCXBCODMV7MIOUY4D3KR66W7ACL4LE
+        tx.operations[0].body.createClaimableBalanceOp.claimants[2].v0.predicate.type: CLAIM_PREDICATE_BEFORE_ABSOLUTE_TIME
+        tx.operations[0].body.createClaimableBalanceOp.claimants[2].v0.predicate.absBefore: 1683723100
+        tx.operations[0].body.createClaimableBalanceOp.claimants[3].type: CLAIMANT_TYPE_V0
+        tx.operations[0].body.createClaimableBalanceOp.claimants[3].v0.destination: GBOAHYPSVULLKLH4OMESGA5BGZTK37EYEPZVI2AHES6LANTCIUPFHUPE
+        tx.operations[0].body.createClaimableBalanceOp.claimants[3].v0.predicate.type: CLAIM_PREDICATE_AND
+        tx.operations[0].body.createClaimableBalanceOp.claimants[3].v0.predicate.andPredicates.len: 2
+        tx.operations[0].body.createClaimableBalanceOp.claimants[3].v0.predicate.andPredicates[0].type: CLAIM_PREDICATE_NOT
+        tx.operations[0].body.createClaimableBalanceOp.claimants[3].v0.predicate.andPredicates[0].notPredicate._present: true
+        tx.operations[0].body.createClaimableBalanceOp.claimants[3].v0.predicate.andPredicates[0].notPredicate.type: CLAIM_PREDICATE_BEFORE_RELATIVE_TIME
+        tx.operations[0].body.createClaimableBalanceOp.claimants[3].v0.predicate.andPredicates[0].notPredicate.relBefore: 600
+        tx.operations[0].body.createClaimableBalanceOp.claimants[3].v0.predicate.andPredicates[1].type: CLAIM_PREDICATE_BEFORE_ABSOLUTE_TIME
+        tx.operations[0].body.createClaimableBalanceOp.claimants[3].v0.predicate.andPredicates[1].absBefore: 1683723100
+        tx.operations[0].body.createClaimableBalanceOp.claimants[4].type: CLAIMANT_TYPE_V0
+        tx.operations[0].body.createClaimableBalanceOp.claimants[4].v0.destination: GDOA4UYIQ3A74WTHQ4BA56Z7F7NU7F34WP2KOGYHV4UXP2T5RXVEYLLF
+        tx.operations[0].body.createClaimableBalanceOp.claimants[4].v0.predicate.type: CLAIM_PREDICATE_OR
+        tx.operations[0].body.createClaimableBalanceOp.claimants[4].v0.predicate.orPredicates.len: 2
+        tx.operations[0].body.createClaimableBalanceOp.claimants[4].v0.predicate.orPredicates[0].type: CLAIM_PREDICATE_BEFORE_ABSOLUTE_TIME
+        tx.operations[0].body.createClaimableBalanceOp.claimants[4].v0.predicate.orPredicates[0].absBefore: 1646723251
+        tx.operations[0].body.createClaimableBalanceOp.claimants[4].v0.predicate.orPredicates[1].type: CLAIM_PREDICATE_BEFORE_ABSOLUTE_TIME
+        tx.operations[0].body.createClaimableBalanceOp.claimants[4].v0.predicate.orPredicates[1].absBefore: 1645723269
+        tx.operations[0].body.createClaimableBalanceOp.claimants[5].type: CLAIMANT_TYPE_V0
+        tx.operations[0].body.createClaimableBalanceOp.claimants[5].v0.destination: GBCZ2KRFMG7IGUSBTHXTJP3ULN2TK4F3EAYSVMS5X4MLOO3DT2LSISOR
+        tx.operations[0].body.createClaimableBalanceOp.claimants[5].v0.predicate.type: CLAIM_PREDICATE_NOT
+        tx.operations[0].body.createClaimableBalanceOp.claimants[5].v0.predicate.notPredicate._present: true
+        tx.operations[0].body.createClaimableBalanceOp.claimants[5].v0.predicate.notPredicate.type: CLAIM_PREDICATE_BEFORE_RELATIVE_TIME
+        tx.operations[0].body.createClaimableBalanceOp.claimants[5].v0.predicate.notPredicate.relBefore: 8000
+        tx.ext.v: 0
+        signatures.len: 1
+        signatures[0].hint: ecd197ef
+        signatures[0].signature: 98f329b240374d898cfcb0171b37f495c488db1abd0e290c0678296e6db09d773e6e73f14a51a017808584d1c4dae13189e4539f4af8b81b6cc830fc43e9d500
+        """;
+        
+        let expected = "AAAAAgAAAABElb1HJqE7zxluTeVtwYvOk4Az0w3krAxnSuBE7NGX7wAAAGQAClykAAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAABAAAAAESVvUcmoTvPGW5N5W3Bi86TgDPTDeSsDGdK4ETs0ZfvAAAADgAAAAAAAAAArNp9AAAAAAYAAAAAAAAAAAuiOmFFq87cZuu1CSK3h1T0eIlAF1Mj9Suv8jRtR5zQAAAAAAAAAAAAAAAAqET7C4FsSbQXWhmw7q34kok311muYZ4Dqu08ZcM0jxQAAAAFAAAAAAAAAZAAAAAAAAAAAK1e2JNktxHrOaF/LbYPJVgrhE4bK/Yh1McHtUfet8AlAAAABAAAAABkW5NcAAAAAAAAAABcA+HyrRa1LPxzCSMDoTZmrfyYI/NUaAckvLA2YkUeUwAAAAEAAAACAAAAAwAAAAEAAAAFAAAAAAAAAlgAAAAEAAAAAGRbk1wAAAAAAAAAANwOUwiGwf5aZ4cCDvs/L9tPl3yz9KcbB68pd+p9jepMAAAAAgAAAAIAAAAEAAAAAGInALMAAAAEAAAAAGIXvoUAAAAAAAAAAEWdKiVhvoNSQZnvNL90W3U1cLsgMSqyXb8YtztjnpckAAAAAwAAAAEAAAAFAAAAAAAAH0AAAAAAAAAAAezRl+8AAABAmPMpskA3TYmM/LAXGzf0lcSI2xq9DikMBngpbm2wnXc+bnPxSlGgF4CFhNHE2uExieRTn0r4uBtsyDD8Q+nVAA==";
+
+        let xdr = try! TxRep.fromTxRep(txRep: txrep)
+        print(xdr)
+        XCTAssert (xdr == expected)
+        let txRepRes = try! TxRep.toTxRep(transactionEnvelope: xdr);
+        print(txRepRes)
+        XCTAssert (txRepRes == txrep)
+    }
+    
+    func testClaimClaimableBalanceTxRep() {
+        let txrep = """
+        type: ENVELOPE_TYPE_TX
+        tx.sourceAccount: GBCJLPKHE2QTXTYZNZG6K3OBRPHJHABT2MG6JLAMM5FOARHM2GL67VCW
+        tx.fee: 100
+        tx.seqNum: 2916609211498497
+        tx.timeBounds._present: true
+        tx.timeBounds.minTime: 0
+        tx.timeBounds.maxTime: 0
+        tx.memo.type: MEMO_NONE
+        tx.operations.len: 1
+        tx.operations[0].sourceAccount._present: false
+        tx.operations[0].body.type: CLAIM_CLAIMABLE_BALANCE
+        tx.operations[0].body.claimClaimableBalanceOp.balanceID.type: CLAIMABLE_BALANCE_ID_TYPE_V0
+        tx.operations[0].body.claimClaimableBalanceOp.balanceID.v0: ceab14eebbdbfe25a1830e39e311c2180846df74947ba24a386b8314ccba6622
+        tx.ext.v: 0
+        signatures.len: 1
+        signatures[0].hint: ecd197ef
+        signatures[0].signature: 9475bef299458bb105f63ac58df4201064d60f7cfd8ffec8ac8fd34198b94e279a257f9b7bae7f2e3a759268612b565043dacb689f7df7c99cd55d9d51bb0b06
+        """;
+        
+        let expected = "AAAAAgAAAABElb1HJqE7zxluTeVtwYvOk4Az0w3krAxnSuBE7NGX7wAAAGQAClykAAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAADwAAAADOqxTuu9v+JaGDDjnjEcIYCEbfdJR7oko4a4MUzLpmIgAAAAAAAAAB7NGX7wAAAECUdb7ymUWLsQX2OsWN9CAQZNYPfP2P/sisj9NBmLlOJ5olf5t7rn8uOnWSaGErVlBD2ston333yZzVXZ1RuwsG";
+
+        let xdr = try! TxRep.fromTxRep(txRep: txrep)
+        print(xdr)
+        XCTAssert (xdr == expected)
+        let txRepRes = try! TxRep.toTxRep(transactionEnvelope: xdr);
+        print(txRepRes)
+        XCTAssert (txRepRes == txrep)
+    }
+    
+    func testSponsorshipTxRep() {
+        let txrep = """
+        type: ENVELOPE_TYPE_TX
+        tx.sourceAccount: GBCJLPKHE2QTXTYZNZG6K3OBRPHJHABT2MG6JLAMM5FOARHM2GL67VCW
+        tx.fee: 200
+        tx.seqNum: 2916609211498497
+        tx.timeBounds._present: true
+        tx.timeBounds.minTime: 0
+        tx.timeBounds.maxTime: 0
+        tx.memo.type: MEMO_NONE
+        tx.operations.len: 2
+        tx.operations[0].sourceAccount._present: true
+        tx.operations[0].sourceAccount: GBCJLPKHE2QTXTYZNZG6K3OBRPHJHABT2MG6JLAMM5FOARHM2GL67VCW
+        tx.operations[0].body.type: BEGIN_SPONSORING_FUTURE_RESERVES
+        tx.operations[0].body.beginSponsoringFutureReservesOp.sponsoredID: GDNRZEXQCACXLN4TNS4EJARUQKZGT7HDU4P54XD2SXENPMRRYSZXGYUX
+        tx.operations[1].sourceAccount._present: true
+        tx.operations[1].sourceAccount: GBCJLPKHE2QTXTYZNZG6K3OBRPHJHABT2MG6JLAMM5FOARHM2GL67VCW
+        tx.operations[1].body.type: END_SPONSORING_FUTURE_RESERVES
+        tx.ext.v: 0
+        signatures.len: 1
+        signatures[0].hint: ecd197ef
+        signatures[0].signature: 194a962d2f51ae1af1c4bfa3e8eeca7aa2b6654a84ac03de37d1738171e43f8ece2101fe6bd44cacd9f0bf10c93616cdfcf04639727a08ca84339fade990d40e
+        """;
+        
+        let expected = "AAAAAgAAAABElb1HJqE7zxluTeVtwYvOk4Az0w3krAxnSuBE7NGX7wAAAMgAClykAAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAABAAAAAESVvUcmoTvPGW5N5W3Bi86TgDPTDeSsDGdK4ETs0ZfvAAAAEAAAAADbHJLwEAV1t5NsuESCNIKyafzjpx/eXHqVyNeyMcSzcwAAAAEAAAAARJW9RyahO88Zbk3lbcGLzpOAM9MN5KwMZ0rgROzRl+8AAAARAAAAAAAAAAHs0ZfvAAAAQBlKli0vUa4a8cS/o+juynqitmVKhKwD3jfRc4Fx5D+OziEB/mvUTKzZ8L8QyTYWzfzwRjlyegjKhDOfremQ1A4=";
+
+        let xdr = try! TxRep.fromTxRep(txRep: txrep)
+        print(xdr)
+        XCTAssert (xdr == expected)
+        let txRepRes = try! TxRep.toTxRep(transactionEnvelope: xdr);
+        print(txRepRes)
+        XCTAssert (txRepRes == txrep)
+    }
+    
+    func testRevokeSponsorshipTxRep() {
+        let txrep = """
+        type: ENVELOPE_TYPE_TX
+        tx.sourceAccount: GBCJLPKHE2QTXTYZNZG6K3OBRPHJHABT2MG6JLAMM5FOARHM2GL67VCW
+        tx.fee: 800
+        tx.seqNum: 2916609211498497
+        tx.timeBounds._present: true
+        tx.timeBounds.minTime: 0
+        tx.timeBounds.maxTime: 0
+        tx.memo.type: MEMO_NONE
+        tx.operations.len: 8
+        tx.operations[0].sourceAccount._present: false
+        tx.operations[0].body.type: REVOKE_SPONSORSHIP
+        tx.operations[0].body.revokeSponsorshipOp.type: REVOKE_SPONSORSHIP_LEDGER_ENTRY
+        tx.operations[0].body.revokeSponsorshipOp.ledgerKey.type: ACCOUNT
+        tx.operations[0].body.revokeSponsorshipOp.ledgerKey.account.accountID: GDNRZEXQCACXLN4TNS4EJARUQKZGT7HDU4P54XD2SXENPMRRYSZXGYUX
+        tx.operations[1].sourceAccount._present: false
+        tx.operations[1].body.type: REVOKE_SPONSORSHIP
+        tx.operations[1].body.revokeSponsorshipOp.type: REVOKE_SPONSORSHIP_LEDGER_ENTRY
+        tx.operations[1].body.revokeSponsorshipOp.ledgerKey.type: TRUSTLINE
+        tx.operations[1].body.revokeSponsorshipOp.ledgerKey.trustLine.accountID: GDNRZEXQCACXLN4TNS4EJARUQKZGT7HDU4P54XD2SXENPMRRYSZXGYUX
+        tx.operations[1].body.revokeSponsorshipOp.ledgerKey.trustLine.asset: ACC:GBCJLPKHE2QTXTYZNZG6K3OBRPHJHABT2MG6JLAMM5FOARHM2GL67VCW
+        tx.operations[2].sourceAccount._present: false
+        tx.operations[2].body.type: REVOKE_SPONSORSHIP
+        tx.operations[2].body.revokeSponsorshipOp.type: REVOKE_SPONSORSHIP_LEDGER_ENTRY
+        tx.operations[2].body.revokeSponsorshipOp.ledgerKey.type: OFFER
+        tx.operations[2].body.revokeSponsorshipOp.ledgerKey.offer.sellerID: GDNRZEXQCACXLN4TNS4EJARUQKZGT7HDU4P54XD2SXENPMRRYSZXGYUX
+        tx.operations[2].body.revokeSponsorshipOp.ledgerKey.offer.offerID: 293893
+        tx.operations[3].sourceAccount._present: false
+        tx.operations[3].body.type: REVOKE_SPONSORSHIP
+        tx.operations[3].body.revokeSponsorshipOp.type: REVOKE_SPONSORSHIP_LEDGER_ENTRY
+        tx.operations[3].body.revokeSponsorshipOp.ledgerKey.type: DATA
+        tx.operations[3].body.revokeSponsorshipOp.ledgerKey.data.accountID: GDNRZEXQCACXLN4TNS4EJARUQKZGT7HDU4P54XD2SXENPMRRYSZXGYUX
+        tx.operations[3].body.revokeSponsorshipOp.ledgerKey.data.dataName: "Soneso"
+        tx.operations[4].sourceAccount._present: false
+        tx.operations[4].body.type: REVOKE_SPONSORSHIP
+        tx.operations[4].body.revokeSponsorshipOp.type: REVOKE_SPONSORSHIP_LEDGER_ENTRY
+        tx.operations[4].body.revokeSponsorshipOp.ledgerKey.type: CLAIMABLE_BALANCE
+        tx.operations[4].body.revokeSponsorshipOp.ledgerKey.claimableBalance.balanceID.type: CLAIMABLE_BALANCE_ID_TYPE_V0
+        tx.operations[4].body.revokeSponsorshipOp.ledgerKey.claimableBalance.balanceID.v0: ceab14eebbdbfe25a1830e39e311c2180846df74947ba24a386b8314ccba6622
+        tx.operations[5].sourceAccount._present: true
+        tx.operations[5].sourceAccount: GBCJLPKHE2QTXTYZNZG6K3OBRPHJHABT2MG6JLAMM5FOARHM2GL67VCW
+        tx.operations[5].body.type: REVOKE_SPONSORSHIP
+        tx.operations[5].body.revokeSponsorshipOp.type: REVOKE_SPONSORSHIP_SIGNER
+        tx.operations[5].body.revokeSponsorshipOp.signer.accountID: GDNRZEXQCACXLN4TNS4EJARUQKZGT7HDU4P54XD2SXENPMRRYSZXGYUX
+        tx.operations[5].body.revokeSponsorshipOp.signer.signerKey: GBCJLPKHE2QTXTYZNZG6K3OBRPHJHABT2MG6JLAMM5FOARHM2GL67VCW
+        tx.operations[6].sourceAccount._present: false
+        tx.operations[6].body.type: REVOKE_SPONSORSHIP
+        tx.operations[6].body.revokeSponsorshipOp.type: REVOKE_SPONSORSHIP_SIGNER
+        tx.operations[6].body.revokeSponsorshipOp.signer.accountID: GDNRZEXQCACXLN4TNS4EJARUQKZGT7HDU4P54XD2SXENPMRRYSZXGYUX
+        tx.operations[6].body.revokeSponsorshipOp.signer.signerKey: XD3J3C5TAC4FCWIKWL45L3Z6LE3KK4OZ3DN3AC3CAE4HHYIGVW4TUVTH
+        tx.operations[7].sourceAccount._present: false
+        tx.operations[7].body.type: REVOKE_SPONSORSHIP
+        tx.operations[7].body.revokeSponsorshipOp.type: REVOKE_SPONSORSHIP_SIGNER
+        tx.operations[7].body.revokeSponsorshipOp.signer.accountID: GDNRZEXQCACXLN4TNS4EJARUQKZGT7HDU4P54XD2SXENPMRRYSZXGYUX
+        tx.operations[7].body.revokeSponsorshipOp.signer.signerKey: TD3J3C5TAC4FCWIKWL45L3Z6LE3KK4OZ3DN3AC3CAE4HHYIGVW4TVRW6
+        tx.ext.v: 0
+        signatures.len: 1
+        signatures[0].hint: ecd197ef
+        signatures[0].signature: 73c223f85c34f1399e9af3322a638a8877987724567e452179a9f2b159a96a1dd4e63cfb8c54e7803aa2f3787492f255698ea536070fc3e3ad9f87e36a0e660c
+        """;
+        
+        let expected = "AAAAAgAAAABElb1HJqE7zxluTeVtwYvOk4Az0w3krAxnSuBE7NGX7wAAAyAAClykAAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAEgAAAAAAAAAAAAAAANsckvAQBXW3k2y4RII0grJp/OOnH95cepXI17IxxLNzAAAAAAAAABIAAAAAAAAAAQAAAADbHJLwEAV1t5NsuESCNIKyafzjpx/eXHqVyNeyMcSzcwAAAAFBQ0MAAAAAAESVvUcmoTvPGW5N5W3Bi86TgDPTDeSsDGdK4ETs0ZfvAAAAAAAAABIAAAAAAAAAAgAAAADbHJLwEAV1t5NsuESCNIKyafzjpx/eXHqVyNeyMcSzcwAAAAAABHwFAAAAAAAAABIAAAAAAAAAAwAAAADbHJLwEAV1t5NsuESCNIKyafzjpx/eXHqVyNeyMcSzcwAAAAZTb25lc28AAAAAAAAAAAASAAAAAAAAAAQAAAAAzqsU7rvb/iWhgw454xHCGAhG33SUe6JKOGuDFMy6ZiIAAAABAAAAAESVvUcmoTvPGW5N5W3Bi86TgDPTDeSsDGdK4ETs0ZfvAAAAEgAAAAEAAAAA2xyS8BAFdbeTbLhEgjSCsmn846cf3lx6lcjXsjHEs3MAAAAARJW9RyahO88Zbk3lbcGLzpOAM9MN5KwMZ0rgROzRl+8AAAAAAAAAEgAAAAEAAAAA2xyS8BAFdbeTbLhEgjSCsmn846cf3lx6lcjXsjHEs3MAAAAC9p2LswC4UVkKsvnV7z5ZNqVx2djbsAtiAThz4QatuToAAAAAAAAAEgAAAAEAAAAA2xyS8BAFdbeTbLhEgjSCsmn846cf3lx6lcjXsjHEs3MAAAAB9p2LswC4UVkKsvnV7z5ZNqVx2djbsAtiAThz4QatuToAAAAAAAAAAezRl+8AAABAc8Ij+Fw08TmemvMyKmOKiHeYdyRWfkUheanysVmpah3U5jz7jFTngDqi83h0kvJVaY6lNgcPw+Otn4fjag5mDA==";
+
+        let xdr = try! TxRep.fromTxRep(txRep: txrep)
+        print(xdr)
+        XCTAssert (xdr == expected)
+        let txRepRes = try! TxRep.toTxRep(transactionEnvelope: xdr);
+        print(txRepRes)
+        XCTAssert (txRepRes == txrep)
+    }
+    
+    func testClawbackTxRep() {
+        let txrep = """
+        type: ENVELOPE_TYPE_TX
+        tx.sourceAccount: GBCJLPKHE2QTXTYZNZG6K3OBRPHJHABT2MG6JLAMM5FOARHM2GL67VCW
+        tx.fee: 100
+        tx.seqNum: 2916609211498497
+        tx.timeBounds._present: true
+        tx.timeBounds.minTime: 0
+        tx.timeBounds.maxTime: 0
+        tx.memo.type: MEMO_NONE
+        tx.operations.len: 1
+        tx.operations[0].sourceAccount._present: true
+        tx.operations[0].sourceAccount: GBCJLPKHE2QTXTYZNZG6K3OBRPHJHABT2MG6JLAMM5FOARHM2GL67VCW
+        tx.operations[0].body.type: CLAWBACK
+        tx.operations[0].body.clawbackOp.asset: ACC:GBCJLPKHE2QTXTYZNZG6K3OBRPHJHABT2MG6JLAMM5FOARHM2GL67VCW
+        tx.operations[0].body.clawbackOp.from: GDNRZEXQCACXLN4TNS4EJARUQKZGT7HDU4P54XD2SXENPMRRYSZXGYUX
+        tx.operations[0].body.clawbackOp.amount: 2330000000
+        tx.ext.v: 0
+        signatures.len: 1
+        signatures[0].hint: ecd197ef
+        signatures[0].signature: 336998785b7815aac464789d04735d06d0421c5f92d1307a9d164e270fa1a214d30d3f00260146a80a3bb0318c92058c05f6de07589b1172c4b6ab630c628c04
+        """;
+        
+        let expected = "AAAAAgAAAABElb1HJqE7zxluTeVtwYvOk4Az0w3krAxnSuBE7NGX7wAAAGQAClykAAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAABAAAAAESVvUcmoTvPGW5N5W3Bi86TgDPTDeSsDGdK4ETs0ZfvAAAAEwAAAAFBQ0MAAAAAAESVvUcmoTvPGW5N5W3Bi86TgDPTDeSsDGdK4ETs0ZfvAAAAANsckvAQBXW3k2y4RII0grJp/OOnH95cepXI17IxxLNzAAAAAIrg+oAAAAAAAAAAAezRl+8AAABAM2mYeFt4FarEZHidBHNdBtBCHF+S0TB6nRZOJw+hohTTDT8AJgFGqAo7sDGMkgWMBfbeB1ibEXLEtqtjDGKMBA==";
+
+        let xdr = try! TxRep.fromTxRep(txRep: txrep)
+        print(xdr)
+        XCTAssert (xdr == expected)
+        let txRepRes = try! TxRep.toTxRep(transactionEnvelope: xdr);
+        print(txRepRes)
+        XCTAssert (txRepRes == txrep)
+    }
+    
+    func testClawbackClamableBalanceTxRep() {
+        let txrep = """
+        type: ENVELOPE_TYPE_TX
+        tx.sourceAccount: GBCJLPKHE2QTXTYZNZG6K3OBRPHJHABT2MG6JLAMM5FOARHM2GL67VCW
+        tx.fee: 100
+        tx.seqNum: 2916609211498497
+        tx.timeBounds._present: true
+        tx.timeBounds.minTime: 0
+        tx.timeBounds.maxTime: 0
+        tx.memo.type: MEMO_NONE
+        tx.operations.len: 1
+        tx.operations[0].sourceAccount._present: false
+        tx.operations[0].body.type: CLAWBACK_CLAIMABLE_BALANCE
+        tx.operations[0].body.clawbackClaimableBalanceOp.balanceID.type: CLAIMABLE_BALANCE_ID_TYPE_V0
+        tx.operations[0].body.clawbackClaimableBalanceOp.balanceID.v0: f69d8bb300b851590ab2f9d5ef3e5936a571d9d8dbb00b62013873e106adb93a
+        tx.ext.v: 0
+        signatures.len: 1
+        signatures[0].hint: ecd197ef
+        signatures[0].signature: 6db5b9ff8e89c2103971550a485754286d1f782aa7fac17e2553bbaec9ab3969794d0fd5ba6d0b4575b9c75c1c464337fee1b4e5592eb77877b7a72487acb909
+        """;
+        
+        let expected = "AAAAAgAAAABElb1HJqE7zxluTeVtwYvOk4Az0w3krAxnSuBE7NGX7wAAAGQAClykAAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAFAAAAAD2nYuzALhRWQqy+dXvPlk2pXHZ2NuwC2IBOHPhBq25OgAAAAAAAAAB7NGX7wAAAEBttbn/jonCEDlxVQpIV1QobR94Kqf6wX4lU7uuyas5aXlND9W6bQtFdbnHXBxGQzf+4bTlWS63eHe3pySHrLkJ"
+
+        let xdr = try! TxRep.fromTxRep(txRep: txrep)
+        print(xdr)
+        XCTAssert (xdr == expected)
+        let txRepRes = try! TxRep.toTxRep(transactionEnvelope: xdr);
+        print(txRepRes)
+        XCTAssert (txRepRes == txrep)
+    }
+    
+    func testSetTrustlineFlagsTxRep() {
+        let txrep = """
+        type: ENVELOPE_TYPE_TX
+        tx.sourceAccount: GBCJLPKHE2QTXTYZNZG6K3OBRPHJHABT2MG6JLAMM5FOARHM2GL67VCW
+        tx.fee: 200
+        tx.seqNum: 2916609211498497
+        tx.timeBounds._present: true
+        tx.timeBounds.minTime: 0
+        tx.timeBounds.maxTime: 0
+        tx.memo.type: MEMO_NONE
+        tx.operations.len: 2
+        tx.operations[0].sourceAccount._present: true
+        tx.operations[0].sourceAccount: GBCJLPKHE2QTXTYZNZG6K3OBRPHJHABT2MG6JLAMM5FOARHM2GL67VCW
+        tx.operations[0].body.type: SET_TRUST_LINE_FLAGS
+        tx.operations[0].body.setTrustLineFlagsOp.trustor: GDNRZEXQCACXLN4TNS4EJARUQKZGT7HDU4P54XD2SXENPMRRYSZXGYUX
+        tx.operations[0].body.setTrustLineFlagsOp.asset: ACC:GBCJLPKHE2QTXTYZNZG6K3OBRPHJHABT2MG6JLAMM5FOARHM2GL67VCW
+        tx.operations[0].body.setTrustLineFlagsOp.clearFlags: 6
+        tx.operations[0].body.setTrustLineFlagsOp.setFlags: 1
+        tx.operations[1].sourceAccount._present: false
+        tx.operations[1].body.type: SET_TRUST_LINE_FLAGS
+        tx.operations[1].body.setTrustLineFlagsOp.trustor: GDNRZEXQCACXLN4TNS4EJARUQKZGT7HDU4P54XD2SXENPMRRYSZXGYUX
+        tx.operations[1].body.setTrustLineFlagsOp.asset: BCC:GBCJLPKHE2QTXTYZNZG6K3OBRPHJHABT2MG6JLAMM5FOARHM2GL67VCW
+        tx.operations[1].body.setTrustLineFlagsOp.clearFlags: 5
+        tx.operations[1].body.setTrustLineFlagsOp.setFlags: 2
+        tx.ext.v: 0
+        signatures.len: 1
+        signatures[0].hint: ecd197ef
+        signatures[0].signature: 5d4569d07068fd4824c87bf531061cf962a820d9ac5d4fdda0a2728f035d154e5cc842aa8aa398bf8ba2f42577930af129c593832ab14ff02c25989eaf8fbf0b
+        """;
+        
+        let expected = "AAAAAgAAAABElb1HJqE7zxluTeVtwYvOk4Az0w3krAxnSuBE7NGX7wAAAMgAClykAAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAABAAAAAESVvUcmoTvPGW5N5W3Bi86TgDPTDeSsDGdK4ETs0ZfvAAAAFQAAAADbHJLwEAV1t5NsuESCNIKyafzjpx/eXHqVyNeyMcSzcwAAAAFBQ0MAAAAAAESVvUcmoTvPGW5N5W3Bi86TgDPTDeSsDGdK4ETs0ZfvAAAABgAAAAEAAAAAAAAAFQAAAADbHJLwEAV1t5NsuESCNIKyafzjpx/eXHqVyNeyMcSzcwAAAAFCQ0MAAAAAAESVvUcmoTvPGW5N5W3Bi86TgDPTDeSsDGdK4ETs0ZfvAAAABQAAAAIAAAAAAAAAAezRl+8AAABAXUVp0HBo/UgkyHv1MQYc+WKoINmsXU/doKJyjwNdFU5cyEKqiqOYv4ui9CV3kwrxKcWTgyqxT/AsJZier4+/Cw=="
+        
+
+        let xdr = try! TxRep.fromTxRep(txRep: txrep)
+        print(xdr)
+        XCTAssert (xdr == expected)
+        let txRepRes = try! TxRep.toTxRep(transactionEnvelope: xdr);
+        print(txRepRes)
+        XCTAssert (txRepRes == txrep)
+    }
+    
+    func testLiquidityPool() {
+        let txrep = """
+        type: ENVELOPE_TYPE_TX
+        tx.sourceAccount: GBCJLPKHE2QTXTYZNZG6K3OBRPHJHABT2MG6JLAMM5FOARHM2GL67VCW
+        tx.fee: 200
+        tx.seqNum: 2916609211498497
+        tx.timeBounds._present: true
+        tx.timeBounds.minTime: 0
+        tx.timeBounds.maxTime: 0
+        tx.memo.type: MEMO_NONE
+        tx.operations.len: 2
+        tx.operations[0].sourceAccount._present: true
+        tx.operations[0].sourceAccount: GBCJLPKHE2QTXTYZNZG6K3OBRPHJHABT2MG6JLAMM5FOARHM2GL67VCW
+        tx.operations[0].body.type: LIQUIDITY_POOL_DEPOSIT
+        tx.operations[0].body.liquidityPoolDepositOp.liquidityPoolID: f69d8bb300b851590ab2f9d5ef3e5936a571d9d8dbb00b62013873e106adb93a
+        tx.operations[0].body.liquidityPoolDepositOp.maxAmountA: 1000000000
+        tx.operations[0].body.liquidityPoolDepositOp.maxAmountB: 2000000000
+        tx.operations[0].body.liquidityPoolDepositOp.minPrice.n: 20
+        tx.operations[0].body.liquidityPoolDepositOp.minPrice.d: 1
+        tx.operations[0].body.liquidityPoolDepositOp.maxPrice.n: 30
+        tx.operations[0].body.liquidityPoolDepositOp.maxPrice.d: 1
+        tx.operations[1].sourceAccount._present: false
+        tx.operations[1].body.type: LIQUIDITY_POOL_WITHDRAW
+        tx.operations[1].body.liquidityPoolWithdrawOp.liquidityPoolID: ceab14eebbdbfe25a1830e39e311c2180846df74947ba24a386b8314ccba6622
+        tx.operations[1].body.liquidityPoolWithdrawOp.amount: 9000000000
+        tx.operations[1].body.liquidityPoolWithdrawOp.minAmountA: 2000000000
+        tx.operations[1].body.liquidityPoolWithdrawOp.minAmountB: 4000000000
+        tx.ext.v: 0
+        signatures.len: 1
+        signatures[0].hint: ecd197ef
+        signatures[0].signature: ed97d0d018a671c5a914a15346c1b38912d6695d1d152ffe976b8c9689ce2e7770b0e6cc8889c4a2423323898b087e5fbf43306ef7e63a75366befd3e2a9bd03
+        """;
+        
+        let expected = "AAAAAgAAAABElb1HJqE7zxluTeVtwYvOk4Az0w3krAxnSuBE7NGX7wAAAMgAClykAAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAABAAAAAESVvUcmoTvPGW5N5W3Bi86TgDPTDeSsDGdK4ETs0ZfvAAAAFvadi7MAuFFZCrL51e8+WTalcdnY27ALYgE4c+EGrbk6AAAAADuaygAAAAAAdzWUAAAAABQAAAABAAAAHgAAAAEAAAAAAAAAF86rFO672/4loYMOOeMRwhgIRt90lHuiSjhrgxTMumYiAAAAAhhxGgAAAAAAdzWUAAAAAADuaygAAAAAAAAAAAHs0ZfvAAAAQO2X0NAYpnHFqRShU0bBs4kS1mldHRUv/pdrjJaJzi53cLDmzIiJxKJCMyOJiwh+X79DMG735jp1Nmvv0+KpvQM=";
+        
+        let xdr = try! TxRep.fromTxRep(txRep: txrep)
+        print(xdr)
+        XCTAssert (xdr == expected)
+        let txRepRes = try! TxRep.toTxRep(transactionEnvelope: xdr);
+        print(txRepRes)
+        XCTAssert (txRepRes == txrep)
+    }
+    
     func testTransactionEnvelopeXDRStringInit() {
     
         let xdrStringV1 = "AAAAAgAAAABlfpQzRFiTdhYZiWYK6zm44YWGBfNHvoXOPM+imIUMTQAAA+gAD7FZAAAABAAAAAAAAAAAAAAAAQAAAAEAAAAAZX6UM0RYk3YWGYlmCus5uOGFhgXzR76FzjzPopiFDE0AAAABAAAAAByH6g1uUljaFtnxQRIrC6x47kLp1vHEcml+WhdzQjWKAAAAAAAAAAAA5OHAAAAAAAAAAAGYhQxNAAAAQMRhbj+98fzgU++ft/Sd5Nd/2qLPofcgLyRKyJafSKM4jSNNkLGQKL5oFSJnaBnaOxZ7Jc4q6s5GV9y1bcnIdQc="
@@ -202,12 +555,54 @@ class TransactionsLocalTestCase: XCTestCase {
         }
     }
     
+    func testTransactionXDRStringInit2() {
+        
+        let xdrString = "AAAAAGGbHZGjF1TCQg6NnlLEXMbKG9MXDlZFbCGY4tI4zx75AAAAZAAMTTAAAAABAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAy+FD8d+ZB8Wk9AjQrM1LDd5KKv2OuxlftjDu6Z8D5UIAAAAAR4aMAAAAAAA="
+        do {
+            let transaction = try TransactionXDR(xdr:xdrString)
+            let fee = transaction.fee
+            XCTAssert(fee == 1000)
+            let transactionXDRString = transaction.xdrEncoded
+            XCTAssertTrue(xdrString == transactionXDRString)
+        } catch {
+            XCTAssertTrue(false)
+        }
+    }
     func testTransactionStringInit() {
         let xdrString = "AAAAAJ/Ax+axve53/7sXfQY0fI6jzBeHEcPl0Vsg1C2tqyRbAAAAZAAAAAAAAAAAAAAAAQAAAABb2L/OAAAAAFvYwPoAAAAAAAAAAQAAAAEAAAAAo7FW8r8Nj+SMwPPeAoL4aUkLob7QU68+9Y8CAia5k78AAAAKAAAAN0NJcDhiSHdnU2hUR042ZDE3bjg1ZlFGRVBKdmNtNFhnSWhVVFBuUUF4cUtORVd4V3JYIGF1dGgAAAAAAQAAAEDh/7kQjZbcXypISjto5NtGLuaDGrfL/F08apZQYp38JNMNQ9p/e1Fy0z23WOg/Ic+e91+hgbdTude6+1+i0V41AAAAAA=="
         do {
             let envelope = try Transaction(xdr:xdrString)
             let envelopeString = envelope.xdrEncoded
             XCTAssertTrue(xdrString == envelopeString)
+        } catch {
+            XCTAssertTrue(false)
+        }
+    }
+    
+    func testParsingIssue140() {
+        let transactionResultXdr = "AAAAAAAAAMgAAAAAAAAAAgAAAAAAAAANAAAAAAAAAAIAAAACNfCKzrfR7vcGZKmF9u4JB9rXOtH0Avwy+G1ERVFOXC8AAAABVVNEQwAAAAA7mRE4Dv6Yi6CokA6xz+RPNm99vpRr7QdyQPf2JN8VxQAAAAAABkjxAAAAAVVTRAAAAAAA6KYahh5gr2D4B3PgY0blxyy+Wdyt2jdgjVjvQlEdn9wAAAAAAAZhQgAAAAEAAAAAclv7rnXBwN/wHMcTeKMrqR8n8UWSCkRkTKjFU7OhzpoAAAAANyoO2wAAAAAAAAAAABokRQAAAAFVU0RDAAAAADuZETgO/piLoKiQDrHP5E82b32+lGvtB3JA9/Yk3xXFAAAAAAAGSPEAAAAAMy2fJ5dNHVhsJoWeNbMJnNeI7wUVWTX+ByiWQuwp+68AAAAAAAAAAAAaJEUAAAAAAAAABQAAAAAAAAAA"
+        let envelopeResultXdr = "AAAAAgAAAAAzLZ8nl00dWGwmhZ41swmc14jvBRVZNf4HKJZC7Cn7rwADDUAB6XUMAAAIeQAAAAAAAAAAAAAAAgAAAAEAAAAAMy2fJ5dNHVhsJoWeNbMJnNeI7wUVWTX+ByiWQuwp+68AAAANAAAAAVVTRAAAAAAA6KYahh5gr2D4B3PgY0blxyy+Wdyt2jdgjVjvQlEdn9wAAAAAAAZhQgAAAAAzLZ8nl00dWGwmhZ41swmc14jvBRVZNf4HKJZC7Cn7rwAAAAAAAAAAABngLwAAAAEAAAABVVNEQwAAAAA7mRE4Dv6Yi6CokA6xz+RPNm99vpRr7QdyQPf2JN8VxQAAAAEAAAAAMy2fJ5dNHVhsJoWeNbMJnNeI7wUVWTX+ByiWQuwp+68AAAAFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAJbG9ic3RyLmNvAAAAAAAAAAAAAAAAAAAC7Cn7rwAAAEBtbQWhFE9e1z+uCEm/D54NYqSkQXL3kP+pgYYFmTiDNFCm0Bj4mljcPaANvqBGc1Kj/LoRWJh582FR5MAwGcIIAY1PewAAAEA0aWjOGDvgZ3vOreMwoHuuiapX9n4i79Lr3eZPXGmbZON97F46zEkjjqXavkp3TmvjAsEiOr++7hrdrnNXzhoG"
+        
+        let metaResultXdr = "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"
+        
+        do {
+            let envelopeData = Data(base64Encoded: envelopeResultXdr)!
+            let transactionEnvelope = try XDRDecoder.decode(TransactionEnvelopeXDR.self, data:envelopeData)
+            XCTAssertTrue(transactionEnvelope.type() == 2)
+            
+            let resultData = Data(base64Encoded: transactionResultXdr)!
+            let transactionResult = try XDRDecoder.decode(TransactionResultXDR.self, data:resultData)
+            XCTAssertTrue(transactionResult.feeCharged == 200)
+            
+            let metaData = Data(base64Encoded: metaResultXdr)!
+            let transactionMeta = try XDRDecoder.decode(TransactionMetaXDR.self, data:metaData)
+            switch(transactionMeta) {
+            case .transactionMetaV2(let v2):
+                XCTAssertTrue(v2.operations.count == 2)
+                break
+            default:
+                XCTAssertTrue(false)
+            }
         } catch {
             XCTAssertTrue(false)
         }

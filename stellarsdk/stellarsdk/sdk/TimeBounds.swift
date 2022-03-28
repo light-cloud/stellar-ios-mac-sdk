@@ -22,12 +22,8 @@ final public class TimeBounds {
     /// - Parameter minTime: 64bit Unix timestamp
     /// - Parameter maxTime 64bit Unix timestamp
     ///
-    /// - Throws a StellarSDKError.invalidArgument error if minTime is not less then maxTime
     ///
-    public init(minTime:UInt64, maxTime:UInt64) throws {
-        if minTime >= maxTime {
-            throw StellarSDKError.invalidArgument(message: "minTime must be less than maxTime")
-        }
+    public init(minTime:UInt64, maxTime:UInt64) {
         self.minTime = minTime
         self.maxTime = maxTime
     }
