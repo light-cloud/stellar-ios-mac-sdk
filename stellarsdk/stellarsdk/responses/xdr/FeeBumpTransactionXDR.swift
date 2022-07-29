@@ -89,7 +89,7 @@ public struct FeeBumpTransactionXDR: XDRCodable {
     private func signatureBase(network:Network) throws -> Data {
         let payload = TransactionSignaturePayload(networkId: WrappedData32(network.networkId), taggedTransaction: .typeFeeBump(self))
         
-        return try Data(bytes: XDREncoder.encode(payload))
+        return try Data(XDREncoder.encode(payload))
     }
     
     public func hash(network:Network) throws -> Data {
@@ -101,10 +101,6 @@ public struct FeeBumpTransactionXDR: XDRCodable {
     }
     
     public func toFBEnvelopeXDR() throws -> FeeBumpTransactionEnvelopeXDR {
-        guard !signatures.isEmpty else {
-            throw StellarSDKError.invalidArgument(message: "Transaction must be signed by at least one signer. Use transaction.sign().")
-        }
-        
         return FeeBumpTransactionEnvelopeXDR(tx: self, signatures: signatures)
     }
     

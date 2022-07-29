@@ -35,21 +35,33 @@ public typealias SubmitTransactionClosure = (_ completion: SubmitTransactionEnum
 /// A closure to be callded for the confirmation of a transaction.
 public typealias TransactionConfirmationClosure = ((TransactionXDR) -> (Bool))
 
+/// see https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0007.md
 public class URIScheme: NSObject {
     let sdk = StellarSDK()
     
-    /// This function is used to generate a URIScheme compliant URL to serve as a request to sign a transaction.
+    /// This function is used to generate a URIScheme compliant URL to serve as a request to sign a transaction. It will URL-encode the given parameter values.
+    ///  see: https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0007.md#operation-tx
     ///
     /// - Parameter transactionXDR: A TransactionXDR object representing a transaction on the stellar network.
-    /// - Parameter callBack: A URL callback that will be used to send the transactionXDR to.
-    /// - Parameter publicKey: A publicKey that will be used to sign the url for.
-    /// - Parameter message: A query parameter to indicate any additional information that the website or application wants to show the user in her wallet.
-    /// - Parameter networkPassphrase: Only needs to be set if this transaction is for other network than the public one.
-    /// - Parameter originDomain: A fully qualified domain name that specifies the originating domain of the URI request.
-    /// - Parameter publicKey: A signature of the hash of the URI request (excluding the signature field and value itself).
+    /// - Parameter replace: (optional) A  value that identifies the fields to be replaced in the xdr using the Txrep (SEP-0011) representation.
+    /// - Parameter callBack: (optional) A URL callback that will be used to send the transactionXDR to.
+    /// - Parameter publicKey: (optional) A publicKey that will be used to sign the url for.
+    /// - Parameter chain: (optional) Includes a single SEP-0007 request that spawned or triggered the creation of this SEP-0007 request
+    /// - Parameter message: (optional) A query parameter to indicate any additional information that the website or application wants to show the user in her wallet.
+    /// - Parameter networkPassphrase: (optional) Only needs to be set if this transaction is for other network than the public one.
+    /// - Parameter originDomain: (optional) A fully qualified domain name that specifies the originating domain of the URI request.
+    /// - Parameter signature: (optional) A signature of the hash of the URI request (excluding the signature field and value itself).
     ///
-    public func getSignTransactionURI(transactionXDR: TransactionXDR, callBack: String? = nil, publicKey: String? = nil, message: String? = nil, networkPassphrase: String? = nil,
-                                      originDomain: String? = nil, signature: String? = nil) -> String {
+    public func getSignTransactionURI(transactionXDR: TransactionXDR,
+                                      replace: String? = nil,
+                                      callBack: String? = nil,
+                                      publicKey: String? = nil,
+                                      chain: String? = nil,
+                                      message: String? = nil,
+                                      networkPassphrase: String? = nil,
+                                      originDomain: String? = nil,
+                                      signature: String? = nil) -> String {
+        
         var uriScheme = URISchemeName
         if let encodedEnvelope = try? transactionXDR.encodedEnvelope(), let urlEncondedEnvelope = encodedEnvelope.urlEncoded {
             var params: [String] = []
@@ -58,12 +70,20 @@ public class URIScheme: NSObject {
             
             params.append("\(SignTransactionParams.xdr)=\(urlEncondedEnvelope)")
             
+            if let replace = replace, let urlEncodedReplace = replace.urlEncoded {
+                params.append("\(SignTransactionParams.replace)=\(urlEncodedReplace)")
+            }
+            
             if let callBack = callBack, let urlEncodedCallBack = callBack.urlEncoded {
                 params.append("\(SignTransactionParams.callback)=\(urlEncodedCallBack)")
             }
             
             if let publicKey = publicKey {
                 params.append("\(SignTransactionParams.pubkey)=\(publicKey)")
+            }
+            
+            if let chain = chain, let urlEncodedChain = chain.urlEncoded {
+                params.append("\(SignTransactionParams.chain)=\(urlEncodedChain)")
             }
             
             if let message = message, message.count < MessageMaximumLength, let urlEncodedMessage = message.urlEncoded {
@@ -93,8 +113,10 @@ public class URIScheme: NSObject {
     }
     
     /// This function is used to generate a URIScheme compliant URL to serve as a request to pay a specific address with a specific asset, regardless of the source asset used by the payer.
+    /// It will URL-encode the given parameter values. If memo is MEMO_HASH or MEMO_RETURN it will bese64 encode it and the url encode it.
+    /// See: https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0007.md#operation-pay
     ///
-    /// - Parameter accountID: A valid account ID or payment address that will be used as destination for the payment.
+    /// - Parameter destination: A valid account ID or payment address that will be used as destination for the payment.
     /// - Parameter amount: Amount that destination will receive.
     /// - Parameter assetCode: Asset code (XLM if not present) destination will receive.
     /// - Parameter assetIssuer: Account ID of asset issuer (XLM if not present) destination will receive.
@@ -106,14 +128,22 @@ public class URIScheme: NSObject {
     /// - Parameter originDomain: A fully qualified domain name that specifies the originating domain of the URI request.
     /// - Parameter signature: A signature of the hash of the URI request (excluding the signature field and value itself).
     ///
-    public func getPayOperationURI(accountID: String, amount: Decimal? = nil, assetCode: String? = nil, assetIssuer: String? = nil, memo: String? = nil,
-                                   memoType: String? = MemoTypeAsString.TEXT, callBack: String? = nil, message: String? = nil, networkPassphrase: String? = nil,
-                                   originDomain: String? = nil, signature: String? = nil) -> String {
+    public func getPayOperationURI(destination: String,
+                                   amount: Decimal? = nil,
+                                   assetCode: String? = nil,
+                                   assetIssuer: String? = nil,
+                                   memo: String? = nil,
+                                   memoType: String? = MemoTypeAsString.TEXT,
+                                   callBack: String? = nil,
+                                   message: String? = nil,
+                                   networkPassphrase: String? = nil,
+                                   originDomain: String? = nil,
+                                   signature: String? = nil) -> String {
         var params: [String] = []
         var uriScheme = URISchemeName
         uriScheme += PayOperation
         
-        params.append("\(PayOperationParams.destination)=\(accountID)")
+        params.append("\(PayOperationParams.destination)=\(destination)")
         
         if let amount = amount {
             params.append("\(PayOperationParams.amount)=\(amount)")
@@ -172,7 +202,8 @@ public class URIScheme: NSObject {
         return uriScheme
     }
     
-    /// This function signs the transaction and sends it to the network.
+    
+    /// This function signs the transaction and sends it to the network. It throws a 'HorizonRequestError' on validation error.
     ///
     /// - Parameter forURL: A URIScheme compliant URL that was generated for the sign operation.
     /// - Parameter signerKeyPair: The KeyPair of the signer account.
@@ -181,29 +212,23 @@ public class URIScheme: NSObject {
     /// - Throws:
     ///     - A 'HorizonRequestError' error depending on the error case.
     ///
-    public func signTransaction(forURL url: String, signerKeyPair keyPair: KeyPair, network: Network = .public, transactionConfirmation: TransactionConfirmationClosure? = nil, completion: @escaping SubmitTransactionClosure) {
+    public func signAndSubmitTransaction(forURL url: String,
+                                signerKeyPair keyPair: KeyPair,
+                                network: Network = .public,
+                                transactionConfirmation: TransactionConfirmationClosure? = nil,
+                                completion: @escaping SubmitTransactionClosure) {
+        
         if let transactionXDR = getTransactionXDR(fromURL: url) {
             if let isConfirmed = transactionConfirmation?(transactionXDR), !isConfirmed {
                 completion(.failure(error: HorizonRequestError.requestFailed(message: "Transaction was not confirmed!")))
                 return
             }
-            
-            setupTransactionXDR(transactionXDR: transactionXDR, signerKeyPair: keyPair, publicKey: getValue(forParam: SignTransactionParams.pubkey, fromURL: url)) { (response) -> (Void) in
-                switch response {
-                case .success(transactionXDR: var transaction):
-                    if transaction?.sourceAccount.ed25519AccountId == keyPair.accountId {
-                        try? transaction?.sign(keyPair: keyPair, network: .testnet)
-                        let callback = self.getValue(forParam: .callback, fromURL: url)
-                        self.submitTransaction(transactionXDR: transaction, callback: callback, keyPair: keyPair, completion: { (response) -> (Void) in
-                            completion(response)
-                        })
-                    } else {
-                        completion(.failure(error: HorizonRequestError.requestFailed(message: "Transaction's source account is no match for signer's public key!")))
-                    }
-                case .failure(error: let error):
-                    completion(.failure(error: error))
-                }
-            }
+            var transaction = transactionXDR
+            try? transaction.sign(keyPair: keyPair, network: .testnet)
+            let callback = self.getValue(forParam: .callback, fromURL: url)
+            self.submitTransaction(transactionXDR: transaction, callback: callback, keyPair: keyPair, completion: { (response) -> (Void) in
+                completion(response)
+            })
         } else {
             completion(.failure(error: HorizonRequestError.requestFailed(message: "TransactionXDR missing from url!")))
         }
@@ -212,11 +237,17 @@ public class URIScheme: NSObject {
     /// Sends the transaction to the network.
     private func submitTransaction(transactionXDR: TransactionXDR?, callback: String? = nil, keyPair: KeyPair, skipMemoRequiredCheck:Bool = false, completion: @escaping SubmitTransactionClosure) {
         if let transactionEncodedEnvelope = try? transactionXDR?.encodedEnvelope() {
-            if var callback = callback, callback.hasPrefix("uri:") {
-                callback = String(callback.dropLast(4))
+            if var callback = callback, callback.hasPrefix("url:") {
+                callback = String(callback.dropFirst(4))
                 let serviceHelper = ServiceHelper(baseURL: callback)
-                let data = try? JSONSerialization.data(withJSONObject: ["xdr":transactionEncodedEnvelope], options: .prettyPrinted)
-                serviceHelper.POSTRequestWithPath(path: "", body: data) { (response) -> (Void) in
+                var dataStr = ""
+                if let urlEncodedTransaction = transactionEncodedEnvelope.urlEncoded {
+                    dataStr = String("xdr=") + urlEncodedTransaction
+                } else {
+                    completion(.failure(error: HorizonRequestError.requestFailed(message: "error while urlencoding transaction")))
+                }
+                let data = dataStr.data(using: .utf8)
+                serviceHelper.POSTRequestWithPath(path: "", body: data, contentType: "application/x-www-form-urlencoded") { (response) -> (Void) in
                     let _ = serviceHelper
                     switch response {
                     case .success(_):
@@ -242,75 +273,8 @@ public class URIScheme: NSObject {
         }
     }
     
-    /// Sets the sequence number for the transaction.
-    private func setTransactionXDRSequenceNr(transactionXDR: TransactionXDR, signerKeyPair: KeyPair, completion: @escaping SetupTransactionXDRClosure) {
-        sdk.accounts.getAccountDetails(accountId: transactionXDR.sourceAccount.ed25519AccountId) { (response) -> (Void) in
-            switch response {
-            case .success(details: let accountDetails):
-                let reconfiguredTransactionXDR = TransactionXDR(sourceAccount: transactionXDR.sourceAccount,
-                                                            seqNum: accountDetails.incrementedSequenceNumber(),
-                                                            cond: transactionXDR.cond,
-                                                            memo: transactionXDR.memo,
-                                                            operations: transactionXDR.operations)
-                completion(.success(transactionXDR: reconfiguredTransactionXDR))
-            case .failure(error: let error):
-                completion(.failure(error: error))
-            }
-        }
-    }
-    
-    /// Sets the source account and sequence number for the transaction.
-    private func setTransactionXDRSourceAndSequenceNr(transactionXDR: TransactionXDR, signerAccountID: String, completion: @escaping SetupTransactionXDRClosure) {
-        sdk.accounts.getAccountDetails(accountId: signerAccountID) { (response) -> (Void) in
-            switch response {
-            case .success(details: let accountDetails):
-                var muxedAccount = MuxedAccountXDR.ed25519(accountDetails.keyPair.publicKey.bytes)
-                if let muxi = try? signerAccountID.decodeMuxedAccount() {
-                    muxedAccount = muxi
-                }
-                let reconfiguredTransactionXDR = TransactionXDR(sourceAccount: muxedAccount,
-                                                            seqNum: accountDetails.incrementedSequenceNumber(),
-                                                            cond: transactionXDR.cond,
-                                                            memo: transactionXDR.memo,
-                                                            operations: transactionXDR.operations)
-                completion(.success(transactionXDR: reconfiguredTransactionXDR))
-            case .failure(error: let error):
-                completion(.failure(error: error))
-            }
-        }
-    }
-    
-    /// Checks and sets the transaction's source account and sequence number if they're missing.
-    private func setupTransactionXDR(transactionXDR: TransactionXDR, signerKeyPair: KeyPair, publicKey: String? = nil, completion: @escaping SetupTransactionXDRClosure) {
-        let sourceAccountIsEmpty = transactionXDR.sourceAccount.ed25519AccountId.isEmpty
-        let sequenceNumberIsEmpty = transactionXDR.seqNum == 0
-        let signerAccountID = publicKey ?? signerKeyPair.accountId
-        if sourceAccountIsEmpty && sequenceNumberIsEmpty {
-            setTransactionXDRSourceAndSequenceNr(transactionXDR: transactionXDR, signerAccountID: signerAccountID) { (response) -> (Void) in
-                switch response {
-                case .success(transactionXDR: let transaction):
-                    completion(.success(transactionXDR: transaction))
-                case .failure(error: let error):
-                    completion(.failure(error: error))
-                }
-            }
-            
-        } else if !sourceAccountIsEmpty && sequenceNumberIsEmpty {
-            setTransactionXDRSequenceNr(transactionXDR: transactionXDR, signerKeyPair: signerKeyPair) { (response) -> (Void) in
-                switch response {
-                case .success(transactionXDR: let transaction):
-                    completion(.success(transactionXDR: transaction))
-                case .failure(error: let error):
-                    completion(.failure(error: error))
-                }
-            }
-        } else {
-            completion(.success(transactionXDR: transactionXDR))
-        }
-    }
-    
     /// Gets the public key field value from the url.
-    private func getValue(forParam param: SignTransactionParams, fromURL url: String) -> String? {
+    public func getValue(forParam param: SignTransactionParams, fromURL url: String) -> String? {
         let fields = url.split(separator: "&")
         for field in fields {
             if field.hasPrefix("\(param)") {
@@ -335,10 +299,10 @@ public class URIScheme: NSObject {
     
     /// Gets the transactionXDR object corresponding to the xdr field value in the url.
     private func getTransactionXDR(fromURL url: String) -> TransactionXDR? {
-        let base64UrlEncodedTransaction = getTransactionXDRFieldValue(fromURL: url)
-        let base64Transaction = base64UrlEncodedTransaction?.urlDecoded
-        if let base64Transaction = base64Transaction {
-            if let transactionXDR = try? TransactionXDR(fromBinary: XDRDecoder.init(data: [UInt8].init(base64: base64Transaction))) {
+        let base64UrlEncodedTransactionEnvelope = getTransactionXDRFieldValue(fromURL: url)
+        let base64TransactionEnvelope = base64UrlEncodedTransactionEnvelope?.urlDecoded
+        if let base64TransactionEnvelope = base64TransactionEnvelope {
+            if let transactionXDR = try? Transaction(envelopeXdr: base64TransactionEnvelope).transactionXDR {
                 return transactionXDR
             }
         }
