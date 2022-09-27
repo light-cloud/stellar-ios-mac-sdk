@@ -6,7 +6,7 @@
 //  Copyright © 2018 Soneso. All rights reserved.
 //
 
-import ed25519C
+@_implementationOnly import ed25519C
 
 /// Holds a Stellar private key.
 public final class PrivateKey {
