@@ -19,7 +19,7 @@ To integrate stellar SDK into your Xcode project using CocoaPods, specify it in 
 use_frameworks!
 
 target '<Your Target Name>' do
-    pod 'stellar-ios-mac-sdk', '~> 2.2.3'
+    pod 'stellar-ios-mac-sdk', '~> 2.3.2'
 end
 ```
 
@@ -44,7 +44,7 @@ $ brew install carthage
 To integrate stellar-ios-mac-sdk into your Xcode project using Carthage, specify it in your `Cartfile`:
 
 ```ogdl
-github "soneso/stellar-ios-mac-sdk" ~> 2.2.3
+github "soneso/stellar-ios-mac-sdk" ~> 2.3.2
 ```
 
 Run `carthage update` to build the framework and drag the build `stellar-ios-mac-sdk.framework` into your Xcode project.
@@ -52,7 +52,7 @@ Run `carthage update` to build the framework and drag the build `stellar-ios-mac
 ### Swift Package Manager
 
 ```swift
-.package(name: "stellarsdk", url: "git@github.com:Soneso/stellar-ios-mac-sdk.git", from: "2.2.3"),
+.package(name: "stellarsdk", url: "git@github.com:Soneso/stellar-ios-mac-sdk.git", from: "2.3.2"),
 ```
 
 ### Manual
@@ -149,22 +149,23 @@ sdk.accounts.createTestAccount(accountId: keyPair.accountId) { (response) -> (Vo
 }
 ```
 
+See also: [detailed code example](https://github.com/Soneso/stellar-ios-mac-sdk/blob/master/stellarsdk/stellarsdkTests/docs/QuickStartTest.swift#L18)
+ 
 #### 2.2 Public net
 
-On the other hand, if you would like to create an account in the public net, you should buy some Stellar Lumens from an exchange. When you withdraw the Lumens into your new account, the exchange will automatically create the account for you. However, if you want to create an account from another account of your own, you may run the following code:
+On the other hand, if you would like to create an account in the public net, you should buy some Stellar Lumens from an exchange. See [Stellar's lumen buying guide](https://www.stellar.org/lumens/exchanges). When you withdraw the Lumens into your new account, the exchange will automatically create the account for you. However, if you want to create an account from another account of your own, you may run the following code:
 
 ```swift
 
 // build the operation
-let createAccount = CreateAccountOperation(sourceAccount: nil, 
-                                           destination: destinationKeyPair, 
+let createAccount = try CreateAccountOperation(sourceAccountId: nil,
+                                           destinationAccountId: destinationAccountId,
                                            startBalance: 2.0)
 
 // build the transaction
 let transaction = try Transaction(sourceAccount: accountResponse,
                                      operations: [createAccount],
-                                     memo: Memo.none,
-                                     timeBounds:nil)
+                                     memo: Memo.none)
                                      
 // sign the transaction
 try transaction.sign(keyPair: sourceAccountKeyPair, network: Network.testnet)
@@ -179,6 +180,8 @@ try sdk.transactions.submitTransaction(transaction: transaction) { (response) ->
     }
 }
 ```
+
+See also: [detailed code example](https://github.com/Soneso/stellar-ios-mac-sdk/blob/master/stellarsdk/stellarsdkTests/docs/QuickStartTest.swift#L43)
 
 ### 3. Check account
 #### 3.1 Basic info
@@ -204,7 +207,7 @@ sdk.accounts.getAccountDetails(accountId: keyPair.accountId) { (response) -> (Vo
         print("sequence number: \(accountDetails.sequenceNumber)")
 
         for signer in accountDetails.signers {
-            print("signer public key: \(signer.publicKey)")
+            print("signer public key: \(signer.key)")
         }
 
         print("auth required: \(accountDetails.flags.authRequired)")
@@ -218,6 +221,8 @@ sdk.accounts.getAccountDetails(accountId: keyPair.accountId) { (response) -> (Vo
     }
 }
 ```
+
+See also: [detailed code example](https://github.com/Soneso/stellar-ios-mac-sdk/blob/master/stellarsdk/stellarsdkTests/docs/QuickStartTest.swift#L106)
 
 #### 3.2 Check payments
 
@@ -245,20 +250,30 @@ sdk.payments.getPayments(order:Order.descending, limit:10) { response in
     }
 }
 ```
+See also: [detailed code example](https://github.com/Soneso/stellar-ios-mac-sdk/blob/master/stellarsdk/stellarsdkTests/docs/QuickStartTest.swift#L158)
+
 You can use the parameters:`limit`, `order`, and `cursor` to customize the query. You can also get most recent payments for accounts, ledgers and transactions. 
+
+For example get payments for account:
+
+```swift
+sdk.payments.getPayments(forAccount:keyPair.accountId, order:Order.descending, limit:10)
+```
+
+See also: [detailed code example](https://github.com/Soneso/stellar-ios-mac-sdk/blob/master/stellarsdk/stellarsdkTests/docs/QuickStartTest.swift#L188)
 
 Horizon has SSE support for push data. You can use it like this:
 
-first define your stream item somwhere to be able to hold the reference:
+first define your stream item somewhere to be able to hold the reference:
 ```swift
 var streamItem:OperationsStreamItem? = nil
 ```
 
 then create, assign and use it:
 ```swift
-streamItem = sdk.payments.stream(for: .paymentsForAccount(account: destinationAccountKeyPair.accountId, cursor: nil))
+streamItem = sdk.payments.stream(for: .paymentsForAccount(account: destinationAccountId, cursor: nil))
 
-streamItem?.onReceive { (response) -> (Void) in
+streamItem.onReceive { (response) -> (Void) in
     switch response {
     case .open:
         break
@@ -283,9 +298,11 @@ later you can close the stream item:
 streamItem.close()
 ```
 
+See also: [detailed code example](https://github.com/Soneso/stellar-ios-mac-sdk/blob/master/stellarsdk/stellarsdkTests/docs/QuickStartTest.swift#L222)
+
 #### 3.3 Check others
 
-Just like payments, you you check `assets`, `transactions`, `effects`, `offers`, `operations`, `ledgers` etc.  by:
+Just like payments, you can check `assets`, `transactions`, `effects`, `offers`, `operations`, `ledgers` etc.  by:
 
 ```swift
 sdk.assets.getAssets()
@@ -302,16 +319,15 @@ Example "send payment":
 
 ```swift
 // create the payment operation
-let paymentOperation = PaymentOperation(sourceAccount: sourceAccountKeyPair,
-                                        destination: destinationAccountKeyPair,
+let paymentOperation = PaymentOperation(sourceAccountId: sourceAccountId,
+                                        destinationAccountId: destinationAccountId,
                                         asset: Asset(type: AssetType.ASSET_TYPE_NATIVE)!,
                                         amount: 1.5)
                                         
 // create the transaction containing the payment operation                                        
 let transaction = try Transaction(sourceAccount: accountResponse,
                                   operations: [paymentOperation],
-                                  memo: Memo.none,
-                                  timeBounds:nil)
+                                  memo: Memo.none)
 
 // sign the transaction
 try transaction.sign(keyPair: sourceAccountKeyPair, network: Network.testnet)
@@ -321,11 +337,13 @@ try sdk.transactions.submitTransaction(transaction: transaction) { (response) ->
     switch response {
       case .success(_):
           // ...
-      case .failure(_):
+      default:
           // ...
     }
 }
 ```
+
+See also: [detailed code example](https://github.com/Soneso/stellar-ios-mac-sdk/blob/master/stellarsdk/stellarsdkTests/docs/QuickStartTest.swift#L299)
 
 Get a transaction envelope from an XDR string:
 
@@ -338,6 +356,7 @@ do {
     print("Invalid xdr string")
 }
 ```
+See also: [detailed code example](https://github.com/Soneso/stellar-ios-mac-sdk/blob/master/stellarsdk/stellarsdkTests/docs/QuickStartTest.swift#L359)
 
 Get a transaction object from an XDR string:
 
@@ -512,32 +531,26 @@ The Stellar Ecosystem Proposal [SEP-007](https://github.com/stellar/stellar-prot
 Generate a URI that will serve as a request to sign a transaction. The URI (request) will typically be signed by the user’s trusted wallet where he stores his secret key(s).
 
 ```swift
-sdk.accounts.getAccountDetails(accountId: "GAK7I2E6PVBFF27NU5MRY6UXGDWAJT4PF2AH46NUWLFJFFVLOZIEIO4Q") { (response) -> (Void) in
-    switch response {
-    case .success(let data):
-        // create the payment operation
-        let paymentOperation = PaymentOperation(sourceAccount: sourceAccountKeyPair,
-                                                destination: destinationAccountKeyPair,
-                                                asset: Asset(type: AssetType.ASSET_TYPE_NATIVE)!,
-                                                amount: 1.5)
-        
-        // create the transaction containing the payment operation
-        let transaction = try Transaction(sourceAccount: accountResponse,
-                                          operations: [paymentOperation],
-                                          memo: Memo.none,
-                                          timeBounds:nil)
-        // create the URIScheme object
-        let uriSchemeBuilder = URIScheme()
-        
-        // get the URI with your transactionXDR
-	// more params can be added to the url, check method definition
-        let uriScheme = uriSchemeBuilder.getSignTransactionURI(transactionXDR: transaction.transactionXDR, callBack: "your_callback_api.com")
-        
-    case .failure(let error):
-        //
-    }
-}
+// create the payment operation
+let paymentOperation = try! PaymentOperation(sourceAccountId: sourceAccountId,
+                                        destinationAccountId: destinationAccountId,
+                                        asset: Asset(type: AssetType.ASSET_TYPE_NATIVE)!,
+                                        amount: 1.5)
+
+// create the transaction containing the payment operation
+let transaction = try! Transaction(sourceAccount: accountResponse,
+                                  operations: [paymentOperation],
+                                  memo: Memo.none)
+// create the URIScheme object
+let uriSchemeBuilder = URIScheme()
+
+// get the URI with your transactionXDR
+// more params can be added to the url, check method definition
+let uriScheme = uriSchemeBuilder.getSignTransactionURI(transactionXDR: transaction.transactionXDR, callBack: "your_callback_api.com")
+print (uriScheme);
 ```
+
+See also: [detailed code example](https://github.com/Soneso/stellar-ios-mac-sdk/blob/master/stellarsdk/stellarsdkTests/docs/QuickStartTest.swift#L372)
 
 #### 7.2 Generate a URI for pay operation
 
@@ -546,8 +559,11 @@ Generate a URI that will serve as a request to pay a specific address with a spe
 ```swift
 let uriSchemeBuilder = URIScheme()
 // more params can be added to the url, check method definition
-let uriScheme = uriSchemeBuilder.getPayOperationURI(accountID: "GAK7I2E6PVBFF27NU5MRY6UXGDWAJT4PF2AH46NUWLFJFFVLOZIEIO4Q", amount: 100, assetCode: "BTC", callBack: "your_callback_api.com")
+let uriScheme = uriSchemeBuilder.getPayOperationURI(destination: "GAK7I2E6PVBFF27NU5MRY6UXGDWAJT4PF2AH46NUWLFJFFVLOZIEIO4Q", amount: 100, assetCode: "BTC", assetIssuer:"GC2PIUYXSD23UVLR5LZJPUMDREQ3VTM23XVMERNCHBRTRVFKWJUSRON5", callBack: "your_callback_api.com")
+print (uriScheme);
 ```
+
+See also: [detailed code example](https://github.com/Soneso/stellar-ios-mac-sdk/blob/master/stellarsdk/stellarsdkTests/docs/QuickStartTest.swift#L424)
 
 #### 7.3 Sign a transaction from a given URI and send it to the network
 
@@ -620,7 +636,7 @@ Our SDK is also used by the [LOBSTR Wallet](https://lobstr.co).
 
 ## Stellar Ecosystem Proposals (SEPs) implemented
 
-- [SEP-0001](https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0001.md) - Stellar Toml
+- [SEP-0001](https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0001.md) - Stellar Info File (Toml)
 - [SEP-0002](https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0002.md) - Federation protocol
 - [SEP-0005](https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0005.md) - Key Derivation Methods for Stellar Accounts
 - [SEP-0006](https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0006.md) - Anchor/Client interoperability
@@ -629,6 +645,10 @@ Our SDK is also used by the [LOBSTR Wallet](https://lobstr.co).
 - [SEP-0010](https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0010.md) - Stellar Web Authentication
 - [SEP-0011](https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0011.md) - Txrep
 - [SEP-0012](https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0012.md) - Anchor/Client customer info transfer
+
+## Soroban support
+
+This SDK provides experimental [support for Soroban](https://github.com/Soneso/stellar-ios-mac-sdk/blob/master/soroban.md). 
 
 ## How to contribute
 

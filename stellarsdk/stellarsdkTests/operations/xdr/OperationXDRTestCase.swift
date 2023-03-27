@@ -34,7 +34,7 @@ class OperationXDRTestCase: XCTestCase {
                         case .success(let operations):
                             self.validateOperation(operationXDR: operations.first!)
                             expectation.fulfill()
-                        case .failed:
+                        default:
                             XCTAssert(false)
                         }
                     }
@@ -97,6 +97,8 @@ class OperationXDRTestCase: XCTestCase {
             XCTAssertEqual(code, LiquidityPoolDepositResulCode.success.rawValue)
         case .liquidityPoolWithdraw(let code, _):
             XCTAssertEqual(code, LiquidityPoolWithdrawResulCode.success.rawValue)
+        case .invokeHostFunction(let code, _):
+            XCTAssertEqual(code, InvokeHostFunctionResultCode.success.rawValue)
         case .empty(let code):
             XCTAssertEqual(code, OperationResultCode.badAuth.rawValue)
         }
@@ -722,7 +724,7 @@ class OperationXDRTestCase: XCTestCase {
             XCTAssertEqual(data, parsedOperation.data)
             
             let base64 = try operation.toXDRBase64()
-            XCTAssertEqual("AAAAAQAAAAC7JAuE3XvquOnbsgv2SRztjuk4RoBVefQ0rlrFMMQvfAAAAAoAAAAEdGVzdAAAAAEAAAAFAAECAwQ=", base64)
+            XCTAssertEqual("AAAAAQAAAAC7JAuE3XvquOnbsgv2SRztjuk4RoBVefQ0rlrFMMQvfAAAAAoAAAAEdGVzdAAAAAEAAAAFAAECAwQAAAA=", base64)
             
             expectation.fulfill()
         } catch {
