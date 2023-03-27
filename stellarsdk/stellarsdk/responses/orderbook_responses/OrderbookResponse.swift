@@ -46,4 +46,29 @@ public class OrderbookResponse: NSObject, Decodable {
         buying = try values.decode(OfferAssetResponse.self, forKey: .buying)
 
     }
+  
+  public init(bids: [OrderbookOfferResponse],
+              asks: [OrderbookOfferResponse],
+              selling: OfferAssetResponse,
+              buying: OfferAssetResponse) {
+      self.bids = bids
+      self.asks = asks
+      self.selling = selling
+      self.buying = buying
+      super.init()
+  }
 }
+
+extension OrderbookResponse: NSCopying {
+  public func copy(with zone: NSZone? = nil) -> Any {
+      let copy = OrderbookResponse(
+          bids: bids.map { $0.copy() as! OrderbookOfferResponse },
+          asks: asks.map { $0.copy() as! OrderbookOfferResponse },
+          selling: selling.copy() as! OfferAssetResponse,
+          buying: buying.copy() as! OfferAssetResponse
+      )
+      return copy
+  }
+}
+
+

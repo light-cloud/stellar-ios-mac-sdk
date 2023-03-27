@@ -40,4 +40,22 @@ public class OfferAssetResponse: NSObject, Decodable {
         assetCode = try values.decodeIfPresent(String.self, forKey: .assetCode)
         assetIssuer = try values.decodeIfPresent(String.self, forKey: .assetIssuer)
     }
+  
+  public init(assetType: String, assetCode: String?, assetIssuer: String?) {
+      self.assetType = assetType
+      self.assetCode = assetCode
+      self.assetIssuer = assetIssuer
+      super.init()
+  }
+}
+
+extension OfferAssetResponse: NSCopying {
+    
+    public func copy(with zone: NSZone? = nil) -> Any {
+        let copy = OfferAssetResponse(assetType: assetType,
+                                      assetCode: assetCode,
+                                      assetIssuer: assetIssuer)
+        return copy
+    }
+    
 }

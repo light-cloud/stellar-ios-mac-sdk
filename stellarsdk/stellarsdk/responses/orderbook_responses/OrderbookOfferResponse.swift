@@ -40,4 +40,19 @@ public class OrderbookOfferResponse: NSObject, Decodable {
         price = try values.decode(String.self, forKey: .price)
         amount = try values.decode(String.self, forKey: .amount)
     }
+  
+  public init(priceR: OfferPriceResponse, price: String, amount: String) {
+      self.priceR = priceR
+      self.price = price
+      self.amount = amount
+  }
+}
+
+extension OrderbookOfferResponse: NSCopying {
+  public func copy(with zone: NSZone? = nil) -> Any {
+      let copy = OrderbookOfferResponse(priceR: priceR.copy() as! OfferPriceResponse,
+                                        price: price,
+                                        amount: amount)
+      return copy
+  }
 }
