@@ -36,4 +36,18 @@ public class OfferPriceResponse: NSObject, Decodable {
         numerator = try values.decode(Int32.self, forKey: .numerator)
         denominator = try values.decode(Int32.self, forKey: .denominator)
     }
+  
+    init(numerator:Int32, denominator:Int32) {
+        self.numerator = numerator
+        self.denominator = denominator
+        super.init()
+    }
+}
+
+extension OfferPriceResponse: NSCopying {
+  public func copy(with zone: NSZone? = nil) -> Any {
+      let copy = OfferPriceResponse(numerator: numerator,
+                                    denominator: denominator)
+      return copy
+  }
 }
