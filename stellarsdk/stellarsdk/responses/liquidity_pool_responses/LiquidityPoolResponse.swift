@@ -18,7 +18,7 @@ public class LiquidityPoolResponse: NSObject, Decodable {
     public var totalShares:String
     public var reserves:[ReserveResponse]
     public var pagingToken:String
-    public var lastModifiedLedger:Int?
+    public var lastModifiedLedger:Int
     public var lastModifiedTime:String?
     
     // Properties to encode and decode
@@ -51,7 +51,7 @@ public class LiquidityPoolResponse: NSObject, Decodable {
         totalShares = try values.decode(String.self, forKey: .totalShares)
         reserves = try values.decode([ReserveResponse].self, forKey: .reserves)
         pagingToken = try values.decode(String.self, forKey: .pagingToken)
-        lastModifiedLedger = try values.decodeIfPresent(Int.self, forKey: .lastModifiedLedger)
+        lastModifiedLedger = try values.decode(Int.self, forKey: .lastModifiedLedger)
         lastModifiedTime = try values.decodeIfPresent(String.self, forKey: .lastModifiedTime)
     }
 }

@@ -41,7 +41,7 @@ public class OfferResponse: NSObject, Decodable {
     
     public var sponsor:String?
   
-    public var lastModifiedLedger:Int?
+    public var lastModifiedLedger:Int
     public var lastModifiedTime:String?
     
     private enum CodingKeys: String, CodingKey {
@@ -78,7 +78,7 @@ public class OfferResponse: NSObject, Decodable {
         priceR = try values.decode(OfferPriceResponse.self, forKey: .priceR)
         price = try values.decode(String.self, forKey: .price)
         sponsor = try values.decodeIfPresent(String.self, forKey: .sponsor)
-        lastModifiedLedger = try values.decodeIfPresent(Int.self, forKey: .lastModifiedLedger)
+        lastModifiedLedger = try values.decode(Int.self, forKey: .lastModifiedLedger)
         lastModifiedTime = try values.decodeIfPresent(String.self, forKey: .lastModifiedTime)
     }
 }
